@@ -307,3 +307,43 @@ Vue.createApp(
 
     }
 ).mount('#tasks');
+
+
+function generateRandomValue(max,min){
+    return Math.floor(Math.random() *  (max-min)) + min;
+}
+
+Vue.createApp({
+
+    data(){
+        return{
+
+            playerHealth : 100,
+            monsterHealth : 100,
+
+
+        }
+    },
+
+    methods:{
+
+        attackMonster(){
+
+            var damage = generateRandomValue(12,5)
+            this.monsterHealth -= damage;
+
+            this.attackPlayer();
+
+
+        },
+        attackPlayer(){
+
+            var damage = generateRandomValue(15,8)
+            this.playerHealth -= damage;
+
+
+        }
+    }
+
+
+}).mount('#game');
