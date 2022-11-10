@@ -325,6 +325,17 @@ Vue.createApp({
         }
     },
 
+    computed:{
+
+        monsterBarStyles(){
+            return {width:this.monsterHealth + '%'};
+        },
+        playerBarStyles(){
+            return {width:this.playerHealth + '%'};
+        }
+
+    },
+
     methods:{
 
         attackMonster(){
