@@ -320,30 +320,85 @@ Vue.createApp({
 
             playerHealth : 100,
             monsterHealth : 100,
-
-
+            currentRound : 0,
+            winner : null,
+            logs : []
         }
     },
 
     computed:{
 
         monsterBarStyles(){
+            if(this.monsterHealth < 0){
+                return {width:0 + '%'};
+            }
             return {width:this.monsterHealth + '%'};
         },
         playerBarStyles(){
+            if(this.playerHealth < 0){
+                return {width:0 + '%'};
+            }
             return {width:this.playerHealth + '%'};
+        },
+
+        disableSpecailAttack(){
+            return this.currentRound % 3 !== 0;
         }
 
     },
 
+    watch:{
+        playerHealth(value){
+
+            if(value <= 0 && this.monsterHealth <= 0){
+                this.winner = 'draw';
+            }else if(value <= 0){
+                this.winner = 'monster';
+            }
+
+        },
+
+        monsterHealth(value){
+            if(value <= 0 && this.playerHealth <= 0){
+                this.winner = 'draw';
+
+            }else if(value <= 0){
+                this.winner = 'player';
+            }
+
+        }
+    },
+
     methods:{
+
+        startNewGame(){
+
+               this.playerHealth = 100;
+               this.monsterHealth = 100;
+               this.currentRound = 0;
+               this.winner = null;
+
+        },
+
+        surrender(){
+
+            this.playerHealth = 0;
+
+        },
 
         attackMonster(){
 
+            this.currentRound ++ ;
             var damage = generateRandomValue(12,5)
             this.monsterHealth -= damage;
 
+            this.addLogMessage('player', 'attacked', damage);
+
             this.attackPlayer();
+
+            if(this.playerHealth < 0){
+                //Player lost
+            }
 
 
         },
@@ -352,8 +407,48 @@ Vue.createApp({
             var damage = generateRandomValue(15,8)
             this.playerHealth -= damage;
 
+            this.addLogMessage('monster', 'attacked', damage);
+
+
+        },
+
+        specialAttackMonster(){
+            this.currentRound ++ ;
+            var damage = generateRandomValue(10,25);
+            this.monsterHealth -= damage;
+
+            this.addLogMessage('player', 'special attack', damage);
+
+            this.attackPlayer();
+
+        },
+
+        healPlayer(){
+            this.currentRound ++ ;
+            var healValue = generateRandomValue(15,8);
+            if((this.playerHealth + healValue) <= 100){
+                this.playerHealth += healValue;
+                this.addLogMessage('player', 'heal', healValue);
+            }
+
+
+            this.attackPlayer();
+
+
+        },
+
+        addLogMessage(who, what, value){
+
+            var obj = {};
+            obj.who = who;
+            obj.what = what;
+            obj.value = value;
+
+            this.logs.push(obj);
 
         }
+
+
     }
 
 
